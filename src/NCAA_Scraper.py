@@ -6,6 +6,7 @@ This is a temporary script file.
 """
 
 # NCAA Scraper
+# this is the demonstration for Git Commit
 
 import os
 import csv
