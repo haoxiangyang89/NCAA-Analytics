@@ -48,6 +48,7 @@ class NCAAScraper:
             addressList = []
             for i in range(0,len(elemList)):
                 address = elemList[i].get_attribute("href")
+                address = address.replace("game?","boxscore?")
                 addressList.append(address)
             self.totalGameList[currentDate] = addressList
             currentDate = currentDate + datetime.timedelta(1)
@@ -61,6 +62,15 @@ class NCAAScraper:
         browser = webdriver.Chrome("/Users/haoxiangyang/Downloads/chromedriver") # change it to your own chromedriver address
         while currentDate <= self.end:
             for igame in self.totalGameList[currentDate]:
+                dFile = urllib.request.urlopen(igame)
+                dString = dFile.read()
+                dString = dString.decode("utf-8")
+                
+                IDResult = re.findall('class="team-name" href="/mens-college-basketball/team/_/id/([0-9]+)',dString)
+                dataResult = re.findall('<tr class="highlight"><td class="name">TEAM</td><td class="min"></td>.+?&nbsp;',dString)
+                
+                for team in range(1):
+                    
                 # find the patterns and scrape the data
                 # Please try to finish this part of the code
     
