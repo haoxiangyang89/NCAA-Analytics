@@ -41,6 +41,8 @@ class NCAAScraper:
             else:
                 dayDig = str(currentDate.day)
             addressList = []
+            # Here group 50 has some missing matches on some days
+            # So we have to examine every conference's schedule
             for cid in self.confID:
                 browser.get('http://www.espn.com/mens-college-basketball/scoreboard/_/group/{}/date/{}{}{}'.format(cid,yearDig,monthDig,dayDig))
                 time.sleep(5)
@@ -53,10 +55,10 @@ class NCAAScraper:
             currentDate = currentDate + datetime.timedelta(1)
             
     def GetData(self):
-        header = ["Home Team Name","Away Team Name","Home Team ID","Away Team ID","Neutral","Location","Zipcode","Tournament","Special"\
+        header = ["Date","Home Team Name","Away Team Name","Home Team ID","Away Team ID","Neutral","Location","Zipcode","Tournament","Special",\
                   "Home FG Made","Away FG Made","Home FG Attempt","Away FG Attempt","Home FG Percentage","Away FG Percentage",\
                   "Home 3PT Made","Away 3PT Made","Home 3PT Attempt","Away 3PT Attempt","Home 3PT Percentage","Away 3PT Percentage",\
-                  "Home FT Made","Away FT Made","Home FT Attempt","Away FT Attempt","Home FT Percentage","Away FT Percentage"\
+                  "Home FT Made","Away FT Made","Home FT Attempt","Away FT Attempt","Home FT Percentage","Away FT Percentage",\
                   "Home OREB","Away OREB","Home DREB","Away DREB","Home TREB","Away TREB","Home REB","Away REB","Home AST","Away AST",\
                   "Home STL","Away STL","Home BLK","Away BLK","Home TO","Away TO","Home PF","Away PF","Home TF","Away TF",\
                   "Home FF","Away FF","Home PTS","Away PTS"]
@@ -72,6 +74,7 @@ class NCAAScraper:
                     basicFile = urllib.request.urlopen(igame)
                     basicString = basicFile.read()
                     basicString = basicString.decode("utf-8")
+                    # BeautifulSoup information: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
                     basicSoup = bs4.BeautifulSoup(basicString,'html.parser')
                     # location of the game
                     locationObj = basicSoup.find("div",attrs={"class":"location-details"})
@@ -86,7 +89,8 @@ class NCAAScraper:
                     recordList = basicSoup.findAll("div",attrs={"class":"record"})
                     recordText = recordList[0].text + recordList[1].text
                     if matchNotes != "":
-                        if ("TOURNAMENT" in matchNotes)or("CONFERENCE" in matchNotes):
+                        # To check whether it is a special event/determine whether it is a neutral game
+                        if ("TOURNAMENT" in matchNotes)or("CONFERENCE" in matchNotes)or("CHAMPIONSHIP" in matchNotes):
                             neutralBool = True
                             tourBool = True
                             specialBool = False
@@ -115,6 +119,7 @@ class NCAAScraper:
                         htID = int(teamInfo[1].a.attrs['data-clubhouse-uid'].split(":")[-1])
                     else:
                         htID = 99999
+                    # Some games are postponed, this condition is to deal with that
                     if basicSoup.findAll(name = "td",attrs={"class":"final-score"}) != []:
                         awayPTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[0].text)
                         homePTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[1].text)
@@ -189,7 +194,8 @@ class NCAAScraper:
                                 homeFF = int(dataHome)
                         
                         # consolidate the game data and append it to the totalData list
-                        gameData = [htName,atName,htID,atID,neutralBool,location,zipcode,tourBool,specialBool,\
+                        gameData = ["{}-{}-{}".format(currentDate.year,currentDate.month,currentDate.day),htName,atName,\
+                            htID,atID,neutralBool,location,zipcode,tourBool,specialBool,\
                             homeFGM,awayFGM,homeFGA,awayFGA,homeFGP,awayFGP,home3PTM,away3PTM,home3PTA,away3PTA,\
                             home3PTP,away3PTP,homeFTM,awayFTM,homeFTA,awayFTA,homeFTP,awayFTP,\
                             homeOREB,awayOREB,homeDREB,awayDREB,homeTREB,awayTREB,homeREB,awayREB,\
@@ -223,4 +229,5 @@ class NCAAScraper:
             self.existed = True
         else:
             self.existed = False
+        # the group number of each conference
         self.confID = [3,46,2,1,62,8,4,5,6,7,9,11,10,45,12,13,14,16,18,44,19,20,21,22,23,26,24,25,49,27,30,29]
