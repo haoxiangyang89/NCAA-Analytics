@@ -78,130 +78,135 @@ class NCAAScraper:
                     basicSoup = bs4.BeautifulSoup(basicString,'html.parser')
                     # location of the game
                     locationObj = basicSoup.find("div",attrs={"class":"location-details"})
-                    location = locationObj.ul.li.contents[0].strip()
-                    zipcode = locationObj.ul.li.span.contents[0].strip()
-                    # special notes of the game
-                    if basicSoup.find("div",attrs={"class":"game-details header"}) == None:
-                        matchNotes = ""
-                    else:
-                        matchNotes = basicSoup.find("div",attrs={"class":"game-details header"}).contents[0]
-                    # neutral game or not
-                    recordList = basicSoup.findAll("div",attrs={"class":"record"})
-                    recordText = recordList[0].text + recordList[1].text
-                    if matchNotes != "":
-                        # To check whether it is a special event/determine whether it is a neutral game
-                        if ("TOURNAMENT" in matchNotes)or("CONFERENCE" in matchNotes)or("CHAMPIONSHIP" in matchNotes):
-                            neutralBool = True
-                            tourBool = True
-                            specialBool = False
+                    if locationObj != None:
+                        if locationObj.ul != None:
+                            location = locationObj.ul.li.contents[0].strip()
+                            zipcode = locationObj.ul.li.span.contents[0].strip()
+                        else:
+                            location = ""
+                            zipcode = ""
+                        # special notes of the game
+                        if basicSoup.find("div",attrs={"class":"game-details header"}) == None:
+                            matchNotes = ""
+                        else:
+                            matchNotes = basicSoup.find("div",attrs={"class":"game-details header"}).contents[0]
+                        # neutral game or not
+                        recordList = basicSoup.findAll("div",attrs={"class":"record"})
+                        recordText = recordList[0].text + recordList[1].text
+                        if matchNotes != "":
+                            # To check whether it is a special event/determine whether it is a neutral game
+                            if ("TOURNAMENT" in matchNotes)or("CONFERENCE" in matchNotes)or("CHAMPIONSHIP" in matchNotes):
+                                neutralBool = True
+                                tourBool = True
+                                specialBool = False
+                            else:
+                                tourBool = False
+                                specialBool = True
+                                if ("Home" in recordText)or("Away" in recordText):
+                                    neutralBool = False
+                                else:
+                                    neutralBool = True
                         else:
                             tourBool = False
-                            specialBool = True
+                            specialBool = False
                             if ("Home" in recordText)or("Away" in recordText):
                                 neutralBool = False
                             else:
                                 neutralBool = True
-                    else:
-                        tourBool = False
-                        specialBool = False
-                        if ("Home" in recordText)or("Away" in recordText):
-                            neutralBool = False
+                        teamInfo = basicSoup.findAll("div",attrs={"class":"team-info-wrapper"})
+                        atName = teamInfo[0].find("span",attrs={"class":"long-name"}).text
+                        if teamInfo[0].a != None:
+                            atID = int(teamInfo[0].a.attrs['data-clubhouse-uid'].split(":")[-1])
                         else:
-                            neutralBool = True
-                    teamInfo = basicSoup.findAll("div",attrs={"class":"team-info-wrapper"})
-                    atName = teamInfo[0].find("span",attrs={"class":"long-name"}).text
-                    if teamInfo[0].a != None:
-                        atID = int(teamInfo[0].a.attrs['data-clubhouse-uid'].split(":")[-1])
-                    else:
-                        atID = 99999
-                    htName = teamInfo[1].find("span",attrs={"class":"long-name"}).text
-                    if teamInfo[1].a != None:
-                        htID = int(teamInfo[1].a.attrs['data-clubhouse-uid'].split(":")[-1])
-                    else:
-                        htID = 99999
-                    # Some games are postponed, this condition is to deal with that
-                    if basicSoup.findAll(name = "td",attrs={"class":"final-score"}) != []:
-                        awayPTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[0].text)
-                        homePTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[1].text)
-                        
-                        # obtain the team data by Soup
-                        statFile = urllib.request.urlopen(igameM)
-                        statString = statFile.read()
-                        statString = statString.decode("utf-8")
-                        statSoup = bs4.BeautifulSoup(statString,'html.parser')
-                        teamData = statSoup.findAll(name = "tr",attrs = {"class":["highlight","indent"]})
-                        for item in teamData:
-                            dataList = item.findAll("td")
-                            dataName = dataList[0].text.strip()
-                            dataAway = dataList[1].text.strip()
-                            dataHome = dataList[2].text.strip()
-                            if dataName == "FG Made-Attempted":
-                                awayFGM = int(dataAway.split("-")[0])
-                                awayFGA = int(dataAway.split("-")[1])
-                                homeFGM = int(dataHome.split("-")[0])
-                                homeFGA = int(dataHome.split("-")[1])
-                            if dataName == "Field Goal %":
-                                awayFGP = float(dataAway)
-                                homeFGP = float(dataHome)
-                            if dataName == "3PT Made-Attempted":
-                                away3PTM = int(dataAway.split("-")[0])
-                                away3PTA = int(dataAway.split("-")[1])
-                                home3PTM = int(dataHome.split("-")[0])
-                                home3PTA = int(dataHome.split("-")[1])
-                            if dataName == "Three Point %":
-                                away3PTP = float(dataAway)
-                                home3PTP = float(dataHome)
-                            if dataName == "FT Made-Attempted":
-                                awayFTM = int(dataAway.split("-")[0])
-                                awayFTA = int(dataAway.split("-")[1])
-                                homeFTM = int(dataHome.split("-")[0])
-                                homeFTA = int(dataHome.split("-")[1])
-                            if dataName == "Free Throw %":
-                                awayFTP = float(dataAway)
-                                homeFTP = float(dataHome)
-                            if dataName == "Total Rebounds":
-                                awayREB = int(dataAway)
-                                homeREB = int(dataHome)
-                            if dataName == "Offensive Rebounds":
-                                awayOREB = int(dataAway)
-                                homeOREB = int(dataHome)
-                            if dataName == "Defensive Rebounds":
-                                awayDREB = int(dataAway)
-                                homeDREB = int(dataHome)
-                            if dataName == "Team Rebounds":
-                                awayTREB = int(dataAway)
-                                homeTREB = int(dataHome)
-                            if dataName == "Assists":
-                                awayAST = int(dataAway)
-                                homeAST = int(dataHome)
-                            if dataName == "Steals":
-                                awaySTL = int(dataAway)
-                                homeSTL = int(dataHome)
-                            if dataName == "Blocks":
-                                awayBLK = int(dataAway)
-                                homeBLK = int(dataHome)
-                            if dataName == "Total Turnovers":
-                                awayTO = int(dataAway)
-                                homeTO = int(dataHome)
-                            if dataName == "Personal Fouls":
-                                awayPF = int(dataAway)
-                                homePF = int(dataHome)
-                            if dataName == "Technical Fouls":
-                                awayTF = int(dataAway)
-                                homeTF = int(dataHome)
-                            if dataName == "Flagrant Fouls":
-                                awayFF = int(dataAway)
-                                homeFF = int(dataHome)
-                        
-                        # consolidate the game data and append it to the totalData list
-                        gameData = ["{}-{}-{}".format(currentDate.year,currentDate.month,currentDate.day),htName,atName,\
-                            htID,atID,neutralBool,location,zipcode,tourBool,specialBool,\
-                            homeFGM,awayFGM,homeFGA,awayFGA,homeFGP,awayFGP,home3PTM,away3PTM,home3PTA,away3PTA,\
-                            home3PTP,away3PTP,homeFTM,awayFTM,homeFTA,awayFTA,homeFTP,awayFTP,\
-                            homeOREB,awayOREB,homeDREB,awayDREB,homeTREB,awayTREB,homeREB,awayREB,\
-                            homeAST,awayAST,homeSTL,awaySTL,homeBLK,awayBLK,homeTO,awayTO,homePF,awayPF,\
-                            homeTF,awayTF,homeFF,awayFF,homePTS,awayPTS]
-                        self.totalData.append(gameData)
+                            atID = 99999
+                        htName = teamInfo[1].find("span",attrs={"class":"long-name"}).text
+                        if teamInfo[1].a != None:
+                            htID = int(teamInfo[1].a.attrs['data-clubhouse-uid'].split(":")[-1])
+                        else:
+                            htID = 99999
+                        # Some games are postponed, this condition is to deal with that
+                        if basicSoup.findAll(name = "td",attrs={"class":"final-score"}) != []:
+                            awayPTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[0].text)
+                            homePTS = int(basicSoup.findAll(name = "td",attrs={"class":"final-score"})[1].text)
+                            
+                            # obtain the team data by Soup
+                            statFile = urllib.request.urlopen(igameM)
+                            statString = statFile.read()
+                            statString = statString.decode("utf-8")
+                            statSoup = bs4.BeautifulSoup(statString,'html.parser')
+                            teamData = statSoup.findAll(name = "tr",attrs = {"class":["highlight","indent"]})
+                            for item in teamData:
+                                dataList = item.findAll("td")
+                                dataName = dataList[0].text.strip()
+                                dataAway = dataList[1].text.strip()
+                                dataHome = dataList[2].text.strip()
+                                if dataName == "FG Made-Attempted":
+                                    awayFGM = int(dataAway.split("-")[0])
+                                    awayFGA = int(dataAway.split("-")[1])
+                                    homeFGM = int(dataHome.split("-")[0])
+                                    homeFGA = int(dataHome.split("-")[1])
+                                if dataName == "Field Goal %":
+                                    awayFGP = float(dataAway)
+                                    homeFGP = float(dataHome)
+                                if dataName == "3PT Made-Attempted":
+                                    away3PTM = int(dataAway.split("-")[0])
+                                    away3PTA = int(dataAway.split("-")[1])
+                                    home3PTM = int(dataHome.split("-")[0])
+                                    home3PTA = int(dataHome.split("-")[1])
+                                if dataName == "Three Point %":
+                                    away3PTP = float(dataAway)
+                                    home3PTP = float(dataHome)
+                                if dataName == "FT Made-Attempted":
+                                    awayFTM = int(dataAway.split("-")[0])
+                                    awayFTA = int(dataAway.split("-")[1])
+                                    homeFTM = int(dataHome.split("-")[0])
+                                    homeFTA = int(dataHome.split("-")[1])
+                                if dataName == "Free Throw %":
+                                    awayFTP = float(dataAway)
+                                    homeFTP = float(dataHome)
+                                if dataName == "Total Rebounds":
+                                    awayREB = int(dataAway)
+                                    homeREB = int(dataHome)
+                                if dataName == "Offensive Rebounds":
+                                    awayOREB = int(dataAway)
+                                    homeOREB = int(dataHome)
+                                if dataName == "Defensive Rebounds":
+                                    awayDREB = int(dataAway)
+                                    homeDREB = int(dataHome)
+                                if dataName == "Team Rebounds":
+                                    awayTREB = int(dataAway)
+                                    homeTREB = int(dataHome)
+                                if dataName == "Assists":
+                                    awayAST = int(dataAway)
+                                    homeAST = int(dataHome)
+                                if dataName == "Steals":
+                                    awaySTL = int(dataAway)
+                                    homeSTL = int(dataHome)
+                                if dataName == "Blocks":
+                                    awayBLK = int(dataAway)
+                                    homeBLK = int(dataHome)
+                                if dataName == "Total Turnovers":
+                                    awayTO = int(dataAway)
+                                    homeTO = int(dataHome)
+                                if dataName == "Personal Fouls":
+                                    awayPF = int(dataAway)
+                                    homePF = int(dataHome)
+                                if dataName == "Technical Fouls":
+                                    awayTF = int(dataAway)
+                                    homeTF = int(dataHome)
+                                if dataName == "Flagrant Fouls":
+                                    awayFF = int(dataAway)
+                                    homeFF = int(dataHome)
+                            
+                            # consolidate the game data and append it to the totalData list
+                            gameData = ["{}-{}-{}".format(currentDate.year,currentDate.month,currentDate.day),htName,atName,\
+                                htID,atID,neutralBool,location,zipcode,tourBool,specialBool,\
+                                homeFGM,awayFGM,homeFGA,awayFGA,homeFGP,awayFGP,home3PTM,away3PTM,home3PTA,away3PTA,\
+                                home3PTP,away3PTP,homeFTM,awayFTM,homeFTA,awayFTA,homeFTP,awayFTP,\
+                                homeOREB,awayOREB,homeDREB,awayDREB,homeTREB,awayTREB,homeREB,awayREB,\
+                                homeAST,awayAST,homeSTL,awaySTL,homeBLK,awayBLK,homeTO,awayTO,homePF,awayPF,\
+                                homeTF,awayTF,homeFF,awayFF,homePTS,awayPTS]
+                            self.totalData.append(gameData)
                 except:
                     print(igame+"\n")
             currentDate = currentDate + datetime.timedelta(1)
