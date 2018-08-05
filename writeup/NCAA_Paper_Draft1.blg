@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99d (TeX Live 2017)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: NCAA_Paper_Draft1.aux
+The style file: plain.bst
+Illegal, another \bibstyle command---line 10 of file NCAA_Paper_Draft1.aux
+ : \bibstyle
+ :          {plain}
+I'm skipping whatever remains of this command
+Database file #1: NCAA_Bib.bib
+Warning--entry type for "matuszewski2011bet" isn't style-file defined
+--line 21 of file NCAA_Bib.bib
+Warning--entry type for "masseyRating" isn't style-file defined
+--line 47 of file NCAA_Bib.bib
+Warning--entry type for "sagarinRating" isn't style-file defined
+--line 55 of file NCAA_Bib.bib
+Warning--empty year in brown2010improved
+You've used 7 entries,
+            2118 wiz_defined-function locations,
+            537 strings with 5044 characters,
+and the built_in function-call counts, 2034 in all, are:
+= -- 183
+> -- 118
+< -- 0
++ -- 50
+- -- 40
+* -- 138
+:= -- 357
+add.period$ -- 18
+call.type$ -- 7
+change.case$ -- 41
+chr.to.int$ -- 0
+cite$ -- 8
+duplicate$ -- 63
+empty$ -- 154
+format.name$ -- 40
+if$ -- 404
+int.to.chr$ -- 0
+int.to.str$ -- 7
+missing$ -- 4
+newline$ -- 35
+num.names$ -- 14
+pop$ -- 52
+preamble$ -- 1
+purify$ -- 34
+quote$ -- 0
+skip$ -- 54
+stack$ -- 0
+substring$ -- 82
+swap$ -- 7
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 28
+warning$ -- 1
+while$ -- 18
+width$ -- 8
+write$ -- 68
+(There was 1 error message)

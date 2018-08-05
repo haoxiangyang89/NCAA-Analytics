@@ -1,0 +1,119 @@
+\documentclass[11pt]{article}
+\usepackage[small]{titlesec}
+\usepackage[top = 0.66in,textwidth = 6.5in, textheight=9.1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage{framed}
+\usepackage{natbib}
+\usepackage{float, subfig}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{amsthm}
+\usepackage{grffile}
+\usepackage{sidecap}
+\usepackage{pbox}
+\usepackage{algorithm}
+\usepackage{longtable}
+\usepackage[noend]{algpseudocode}
+
+\def\qed{\hfill{\(\vcenter{\hrule height1pt \hbox{\vrule width1pt height5pt
+     \kern5pt \vrule width1pt} \hrule height1pt}\)} \medskip}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\renewcommand{\textfraction}{0.0}
+\newcommand{\dst}{\displaystyle}
+\newcommand{\minx}{\mbox{\( \dst \min_{x \in X} \)}}
+\newcommand{\Efx}{\mbox{\( \dst E f (x, \xi) \)}}
+\newcommand{\Efxhat}{\mbox{\( \dst E f (\hat{x}, \xi) \)}}
+\newcommand{\hxx}{\mbox{\( \hat{x} \)}}
+\newcommand{\bpi}{\bar{\pi}}
+\newcommand{\xx}{\mbox{\( x \)}}
+\newcommand{\txxi}{\mbox{\(\xi\)}}
+\newcommand{\var}{\mbox{var}}
+\newcommand{\cF}{{\cal F}}
+\newcommand{\cG}{{\cal G}}
+\newcommand{\cN}{{\cal N}}
+\newcommand{\cO}{{\cal O}}
+\newcommand{\txi}{{\xi}}
+\newcommand{\PP}{\mbox{\(SP\)}}
+\newcommand{\PPn}{\mbox{\(SP_n\)}}
+\newcommand{\PPnx}{\mbox{\(SP_{n_x}\)}}
+\newcommand{\noi}{\noindent}
+\renewcommand{\ss}{\smallskip}
+\newcommand{\ms}{\medskip}
+\newcommand{\bs}{\bigskip}
+\newcommand{\st}{\mbox{s.t.}}
+\newcommand{\wpo}{\mbox{wp1}}
+\newcommand{\iid}{\mbox{i.i.d.\ }}
+\newcommand{\vsmo}{\vspace*{-0.1in}}
+\newcommand{\vsmt}{\vspace*{-0.2in}}
+\newcommand{\vso}{\vspace*{0.1in}}
+\newcommand{\vst}{\vspace*{0.2in}}
+\newcommand{\mc}{\multicolumn}
+\newcommand{\cP}{{\cal P}}
+\newcommand{\underv}{\mbox{$\underbar{$v$}$}}
+\allowdisplaybreaks 
+
+\renewcommand{\P}{{\mathbb P}}
+\newcommand{\E}{{\mathbb E}}
+\newcommand{\R}{{\mathbb R}}
+\renewcommand{\Re}{{\mathbb R}}
+\newcommand{\mbf}{\mathbf}
+
+\bibliographystyle{plain}
+
+\begin{document}
+%0.27
+\baselineskip0.25in
+
+\begin{center}
+\begin{large}
+\begin{bf}
+
+A Bayesian Method to Estimate the Strength of NCAA Division I Men's Basketball Teams \ms
+
+\today \ms
+\end{bf}
+\end{large}
+\end{center}
+
+\section{Introduction}
+	The National Collegiate Athletic Association Division I (NCAA D-I) men’s basketball tournament is one of the major sports events in the United States that draws attention to not only sports fans and betters, but also statisticians and operations researchers to use the regular season results and other data to predict the outcome of the tournament. A NCAA D-I basketball regular season usually start in mid-November and is played through early March, which consists of regular inter-conference and intra-conference games, special inter-conference tournament games and single-elimination conference tournament games. and the latter two are usually played in neutral stadiums. There are 353 colleges playing in 32 conferences in 2018-2019 season. After the conclusion of the regular season, conference champions and best teams (judged by the tournament selection committee), 68 in total, are selected to participate in the tournament, which is nicknamed \emph{March Madness}. The teams play single elimination games until the final championship is decided and all games are played in neutral stadiums as well.\\
+	\newline
+	Since there are billions of dollars wagered on the tournament's outcome \cite{matuszewski2011bet}, statistician work on different types of prediction models using regular season data of various fidelities. In terms of ranking systems, Ken Pomeroy uses the Pythagorean Expectation, while Jeff Sagarin, Ken Massey or Raymond Cheung also post ranking results on their websites without entirely disclosing the methodology \cite{masseyRating,sagarinRating}. Kvam and Sokol \cite{kvam2006logistic} first present a logistic regression/Markov chain (LRMC) model that uses only regular season game scores to rank the teams. Based on this ranking, the tournament results are predicted by simply choosing the higher seed to proceed in every round. Brown and Sokol \cite{brown2010improved} improve this method with two Bayesian update methods in the place of logistic regression. The major critique about LRMC models is that they only use game scores as a measure for team strength. Yuan et al.~\cite{yuan2015mixture} provide a mixture of models ranging from logistic regression to neural network based on the features of actual game statistics and strength and ranking information compiled by experts. Since they use aggregated data for the regular season, the progress of regular season of teams are ignored. Zimmerman et al.~\cite{zimmermann2013predicting} use machine learning techniques, including decision trees, neural networks, naive Bayes and ensemble learners such as random forest. This paper points out that there is no consistency of opponents' quality since teams can pick their own opponents in college basketball. \\
+	\newline
+	We address these issues by using more thorough game statistics and trying to incorporate the trend of team performance in our learning process. The outcome of our method reflects multiple dimension of each team's strength and based on those sophisticated properties, we further train a prediction model for the NCAA tournament. In Section~\ref{sec:learn} we describe the data collected. We create multiple measures to evaluate the strength of each team, and we propose a Bayesian method to learn them. Next in Section~\ref{sec:predict}, we use these measures as features and train models to predict the outcome of the NCAA tournament in 2012-2017. 
+	
+\section{Learning Teams' Strength Measures} \label{sec:learn}
+	
+	\textcolor{blue}{
+		\begin{itemize}
+			\item What data do we have (years/category)? The source of data. How do we abstract the data?
+			\item List the measures.
+			\item Update method.
+		\end{itemize}
+	}
+\section{Predict the NCAA Tournament Outcome} \label{sec:predict}
+\section{Conclusions}
+
+\bibliographystyle{plain}
+\bibliography{NCAA_Bib}
+\end{document}

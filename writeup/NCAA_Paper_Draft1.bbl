@@ -1,0 +1,39 @@
+\begin{thebibliography}{1}
+
+\bibitem{brown2010improved}
+M.~Brown and J.~S. Sokol.
+\newblock An improved {LRMC} method for {NCAA} basketball prediction.
+\newblock {\em Journal of Quantitative Analysis in Sports}, 6(3).
+
+\bibitem{kvam2006logistic}
+P.~Kvam and J.~S. Sokol.
+\newblock A logistic regression/{Markov} chain model for {NCAA} basketball.
+\newblock {\em Naval Research Logistics {(NrL)}}, 53(8):788--803, 2006.
+
+\bibitem{masseyRating}
+K.~Massey.
+\newblock College basketball ranking composite, 1999.
+
+\bibitem{matuszewski2011bet}
+E.~Matuszewski.
+\newblock {March Madness} gambling brings out warnings from {NCAA} to players,
+  2011.
+
+\bibitem{sagarinRating}
+J.~Sagarin.
+\newblock Jeff sagarin's college basketball ratings, 2018.
+
+\bibitem{yuan2015mixture}
+L.~Yuan, A.~Liu, A.~Yeh, A.~Kaufman, A.~Reece, P.~Bull, A.~Franks, S.~Wang,
+  D.~Illushin, and L.~Bornn.
+\newblock A mixture-of-modelers approach to forecasting ncaa tournament
+  outcomes.
+\newblock {\em Journal of Quantitative Analysis in Sports}, 11(1):13--27, 2015.
+
+\bibitem{zimmermann2013predicting}
+A.~Zimmermann, S.~Moorthy, and Z.~Shi.
+\newblock Predicting college basketball match outcomes using machine learning
+  techniques: some results and lessons learned.
+\newblock {\em arXiv preprint arXiv:1310.3607}, 2013.
+
+\end{thebibliography}
